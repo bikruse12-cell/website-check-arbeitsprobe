@@ -1,0 +1,46 @@
+{
+ "url": "Landbäckerei Hennerkamp (frei erfunden)",
+ "titel": "Landbäckerei Hennerkamp - Herzlich Willkommen!!!",
+ "jahrgang": 2006,
+ "urteil": "rot",
+ "urteil_text": "Dringender Handlungsbedarf",
+ "punkte": [
+  {
+   "titel": "Handy-Ansicht",
+   "status": "schlecht",
+   "text": "Ihre Seite passt sich nicht an Handy-Bildschirme an. Besucher müssen hineinzoomen und seitlich scrollen."
+  },
+  {
+   "titel": "Sichere Verbindung",
+   "status": "schlecht",
+   "text": "Ihre Seite läuft unverschlüsselt. Chrome zeigt Besuchern seit Oktober 2026 zuerst eine Warnung, erst nach einem Klick auf „Weiter“ sehen sie Ihre Seite. Andere Browser markieren sie als „Nicht sicher“.",
+   "bild": "assets/warnung-http.jpg"
+  },
+  {
+   "titel": "Datenschutzerklärung",
+   "status": "schlecht",
+   "text": "Auf Ihrer Startseite haben wir keinen Link zu einer Datenschutzerklärung gefunden. Seit 2018 (DSGVO) ist sie für fast jede Website Pflicht."
+  },
+  {
+   "titel": "Technik",
+   "status": "schlecht",
+   "text": "Gefunden: gebaut mit einem Programm, das es nicht mehr gibt (Microsoft FrontPage 6.0); Besucherzähler; Hinweis „optimiert für Internet Explorer/Bildschirmauflösung“; Schriftformatierung nach altem Standard."
+  },
+  {
+   "titel": "Impressum",
+   "status": "schlecht",
+   "text": "Ihr Impressum verweist auf Gesetze, die seit 2007 nicht mehr gelten."
+  },
+  {
+   "titel": "Datenschutz-Fallen",
+   "status": "gut",
+   "text": "Keine typischen Datenschutz-Fallen gefunden."
+  },
+  {
+   "titel": "Aktualität",
+   "status": "schlecht",
+   "text": "Das neueste Jahr auf Ihrer Seite ist 2006. Besucher sehen: Hier wurde lange nichts gepflegt."
+  }
+ ],
+ "handy_bild_datei": "assets/beispiel-handy.jpg"
+}

@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="de" data-vorschau>
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kostenloser Website-Check | Digital Architects</title>
+<meta name="description" content="Prüfen Sie kostenlos, ob Ihre Website noch auf dem aktuellen Stand ist: Handy-Ansicht, Sicherheit, Datenschutz und Technik in wenigen Sekunden.">
+<script>
+  // Vorspann nur mit Bewegung. Faellt das Skript aus, gibt eine Notbremse die Seite nach 9 s frei.
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("laedt", "vorspann");
+    setTimeout(() => { if (!window.__vorspann) document.documentElement.classList.remove("laedt", "vorspann"); }, 9000);
+  }
+</script>
+<link rel="icon" href="data:,">
+<link rel="preload" href="assets/fonts/big-shoulders.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/kaushan-script.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Alles liegt lokal: die Seite laedt nichts von Drittanbietern, genau das prueft der Check bei anderen. */
+  @font-face { font-family: "Big Shoulders"; src: url("assets/fonts/big-shoulders.woff2") format("woff2"); font-weight: 800 900; font-display: swap; }
+  @font-face { font-family: "Kaushan"; src: url("assets/fonts/kaushan-script.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+  @font-face { font-family: "Plex Mono"; src: url("assets/fonts/plex-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Plex Mono"; src: url("assets/fonts/plex-mono-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
+  :root {
+    --bg: #0b1324; --bg-2: #0f1a2e; --bg-3: #15233c; --linie: #24344f;
+    --text: #e9eef7; --leise: #9db0cc; --platzhalter: #8a9bb8;
+    --akzent: #f2a641; --akzent-text: #1a1206; --scan: #46d3ea;
+    --schlecht: #d94b4b; --gut: #48d597;
+    --papier: #eee8de; --tinte: #0f1626; --tinte-leise: #6f6a62;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+    --display: "Big Shoulders", "Arial Narrow", Impact, sans-serif;
+    --schrift: "Kaushan", "Brush Script MT", cursive;
+    --sans: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --mono: "Plex Mono", ui-monospace, Consolas, monospace;
+    --farbe: #e8a33c;
+    --z-reise: 20; --z-kopf: 30; --z-vorspann: 60; --z-funken: 70;
+  }
+  * { box-sizing: border-box; }
+  html { scrollbar-gutter: stable; background: var(--bg); }
+  html.laedt { overflow: hidden; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.55;
+         -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--akzent); outline-offset: 3px; border-radius: 6px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Vorspann: Zeitreise durch die Web-Technik, dann teilt der Scan-Strahl den Bildschirm */
+  #vorspann { display: none; }
+  html.vorspann #vorspann { display: block; position: fixed; inset: 0; z-index: var(--z-vorspann); }
+  .vorhang { position: absolute; top: 0; bottom: 0; width: calc(50% + 1px); overflow: hidden; }
+  .vorhang.links { left: 0; }
+  .vorhang.rechts { right: 0; }
+  .vorhang-bild { position: absolute; top: 0; bottom: 0; width: 100vw;
+          background: radial-gradient(circle at 50% 44%, color-mix(in oklab, var(--farbe) 30%, transparent) 0, transparent 34vmax),
+                      radial-gradient(circle at 50% 120%, rgba(38,74,128,0.5), transparent 60vmax), var(--bg); }
+  .vorhang.links .vorhang-bild { left: 0; }
+  .vorhang.rechts .vorhang-bild { left: -50vw; }
+  .lade-mitte { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 22px; }
+  .lade-icon { position: relative; width: 150px; height: 150px; }
+  .lade-icon img { position: absolute; inset: 0; margin: auto; max-width: 100%; max-height: 100%; opacity: 0; }
+  .lade-linie { width: 220px; height: 3px; border-radius: 3px; background: rgba(233,238,247,0.12); overflow: hidden; }
+  .lade-linie i { display: block; height: 100%; background: var(--farbe); box-shadow: 0 0 16px var(--farbe); transform-origin: left; }
+  .lade-jahr { font-family: var(--mono); font-size: 14px; letter-spacing: 0.24em; color: var(--leise); font-variant-numeric: tabular-nums; }
+  .strahl { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px; opacity: 0;
+          background: linear-gradient(transparent, #bff4ff 18%, #fff 50%, #bff4ff 82%, transparent);
+          box-shadow: 0 0 22px 4px rgba(70,211,234,0.75); }
+  #funken { position: fixed; inset: 0; z-index: var(--z-funken); pointer-events: none; }
+  #funken i { position: absolute; left: 50%; top: 50%; border-radius: 2px; }
+  #funken .relikt { width: 40px; height: 40px; margin: -20px 0 0 -20px; background: center / contain no-repeat; image-rendering: pixelated; }
+
+  /* Kopfzeile + Fortschritt */
+  .fortschritt { position: fixed; left: 0; right: 0; top: 0; height: 2px; z-index: var(--z-kopf); transform-origin: left; transform: scaleX(0);
+          background: linear-gradient(90deg, var(--akzent), var(--scan)); }
+  html:not(.bewegt) .fortschritt { display: none; }
+  .kopf { position: fixed; left: 0; right: 0; top: 0; z-index: var(--z-kopf); display: flex; align-items: center; justify-content: space-between;
+          gap: 20px; padding: 18px max(24px, env(safe-area-inset-right)) 18px max(24px, env(safe-area-inset-left)); transition: color 300ms var(--ease-out); }
+  .kopf.hell { color: var(--tinte); }
+  .marke { font-family: var(--mono); font-weight: 500; font-size: 14px; letter-spacing: 0.08em; text-decoration: none; }
+  .kopf-nav { display: flex; gap: 28px; font-size: 15px; }
+  .kopf-nav a { text-decoration: none; opacity: 0.8; padding: 10px 2px; }
+  .kopf-nav a:hover { opacity: 1; }
+  .pille { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 22px; border: 0; border-radius: 999px;
+          background: var(--akzent); color: var(--akzent-text); font: 600 15px/1 var(--sans); text-decoration: none; cursor: pointer;
+          transition: transform 160ms var(--ease-out), background 160ms; }
+  .pille:hover { background: #f6b45c; }
+  .pille:active { transform: scale(0.97); }
+
+  /* Hero: Riesenwort, Schreibschrift, Geraete fliegen herein */
+  .deckel { position: relative; }
+  .hero { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; z-index: 0; }
+  .hero-inhalt { position: absolute; inset: 0; display: grid; place-items: center; transform-origin: 50% 40%;
+          background: radial-gradient(70vw 62vh at 50% 46%, rgba(38,74,128,0.5), transparent 72%),
+                      radial-gradient(38vw 40vh at 86% 12%, rgba(70,211,234,0.1), transparent 70%), var(--bg); }
+  .hero-dunkel { position: absolute; inset: 0; background: #05080f; opacity: 0; pointer-events: none; }
+  .ebene { position: absolute; inset: 0; pointer-events: none; }
+  .ding { position: absolute; left: var(--x); top: var(--y); width: var(--w); }
+  .kippen { transform: rotate(var(--r, 0deg)); }
+  .hero-mitte { position: relative; z-index: 2; text-align: center; padding: 0 16px; }
+  .hero-marke { margin: 0 0 18px; font-family: var(--mono); font-size: 14px; letter-spacing: 0.06em; color: var(--scan); }
+  .hero h1 { margin: 0; font-weight: 900; line-height: 1; }
+  .hero-zeile { display: block; font-family: var(--display); font-weight: 800; font-size: clamp(1.15rem, 2.3vw, 2.1rem); letter-spacing: 0.05em;
+          text-transform: uppercase; color: rgba(233,238,247,0.86); }
+  .riese { position: relative; display: block; margin-top: 0.08em; }
+  .riese-wort { display: block; font-family: var(--display); font-weight: 900; font-size: clamp(5.4rem, 17vw, 16.5rem); line-height: 0.8;
+          letter-spacing: -0.005em; text-transform: uppercase; color: var(--text); }
+  .schrift { position: absolute; right: -0.45em; bottom: -0.5em; font-family: var(--schrift); font-weight: 400; font-size: clamp(2.8rem, 7.2vw, 7rem);
+          color: var(--akzent); transform: rotate(-8deg); text-shadow: 0 6px 30px rgba(5,8,15,0.6); white-space: nowrap; }
+  .w { display: inline-block; white-space: nowrap; }
+  .hero-zeile .w, .riese-wort .w { overflow: hidden; vertical-align: top; padding-bottom: 0.04em; }
+  .wi, .b { display: inline-block; }
+  .check-form { margin: clamp(3.4rem, 9vh, 5.6rem) auto 0; max-width: 540px; }
+  .feldreihe { display: flex; gap: 10px; padding: 7px; border-radius: 999px; background: rgba(15,26,46,0.82);
+          box-shadow: inset 0 0 0 1px var(--linie), 0 24px 50px -24px rgba(0,0,0,0.8); }
+  .feldreihe input { flex: 1 1 auto; min-width: 0; height: 50px; padding: 0 20px; border: 0; border-radius: 999px; background: transparent;
+          font: inherit; font-size: 17px; color: var(--text); }
+  .feldreihe input::placeholder { color: var(--platzhalter); }
+  .feldreihe input:focus { outline: none; }
+  .feldreihe:focus-within { box-shadow: inset 0 0 0 2px var(--scan), 0 24px 50px -24px rgba(0,0,0,0.8); }
+  .feldreihe .pille { height: 50px; flex: none; }
+  .zustand { min-height: 22px; margin: 12px 0 0; font-family: var(--mono); font-size: 13px; color: var(--leise); }
+  .zustand.fehler { color: #ff9a9a; }
+  .hero-fuss { position: absolute; left: max(24px, 3vw); bottom: max(22px, 4vh); z-index: 2; margin: 0; font-family: var(--display); font-weight: 800;
+          font-size: clamp(1rem, 1.5vw, 1.35rem); line-height: 1.05; letter-spacing: 0.06em; text-transform: uppercase; color: var(--leise); }
+  .scroll-hinweis { position: absolute; left: 50%; bottom: max(18px, 3vh); z-index: 2; width: 120px; margin-left: -60px; display: grid; justify-items: center;
+          gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--leise); }
+  .scroll-hinweis i { width: 1px; height: 34px; background: linear-gradient(var(--scan), transparent); transform-origin: top; }
+  html.bewegt .scroll-hinweis i { animation: hinweis 2.2s var(--ease-io) infinite; }
+  @keyframes hinweis { 0% { transform: scaleY(0); } 45% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+  /* Geraete und Sticker */
+  .handy { position: relative; width: var(--hw); padding: 8px; border-radius: calc(var(--hw) * 0.17);
+          background: linear-gradient(150deg, #22314d, #0a111f 60%);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 40px 70px -30px rgba(0,0,0,0.8); }
+  .handy::before { content: ""; position: absolute; top: 13px; left: 50%; width: 30%; height: 13px; margin-left: -15%; border-radius: 8px;
+          background: #05080f; z-index: 3; }
+  .bildschirm { position: relative; overflow: hidden; padding-top: 20px; border-radius: calc(var(--hw) * 0.13); background: #eef0f3; }
+  .bildschirm img { width: 100%; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+  .fenster { width: 100%; overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 40px 80px -30px rgba(0,0,0,0.8); }
+  .fenster-leiste { height: 26px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: #ece6dc; }
+  .fenster-leiste i { width: 9px; height: 9px; border-radius: 50%; background: #cfc6b8; }
+  .fenster-leiste span { margin-left: 10px; padding: 2px 12px; border-radius: 999px; background: #fff; font: 500 11px/1.4 var(--mono); color: #6f6a62; }
+  .fenster img { width: 100%; aspect-ratio: 1440 / 900; object-fit: cover; object-position: top; }
+  .icon img { width: 100%; }
+  .sticker { display: inline-block; padding: 0.55em 1.05em 0.5em; border-radius: 999px; font-family: var(--display); font-weight: 800;
+          font-size: clamp(0.95rem, 1.25vw, 1.15rem); letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+          box-shadow: 0 16px 30px -16px rgba(0,0,0,0.7); }
+  .sticker.rot { background: var(--schlecht); color: #fff; }
+  .sticker.orange { background: var(--akzent); color: var(--akzent-text); }
+  .sticker.hell { background: var(--papier); color: var(--tinte); box-shadow: inset 0 0 0 2px var(--tinte), 0 16px 30px -16px rgba(0,0,0,0.7); }
+
+  /* Das wandernde Handy: liegt im Hero, reist beim Scrollen durch die naechsten Abschnitte */
+  #reise { position: absolute; z-index: var(--z-reise); left: var(--x); top: var(--y); --hw: clamp(120px, 13vw, 200px); pointer-events: none; }
+  html.bewegt #reise { position: fixed; will-change: transform; }
+  .marken { position: absolute; left: 8px; right: 8px; top: 28px; aspect-ratio: 390 / 844; }
+  .befund { position: absolute; left: calc(var(--bx) * 1%); top: calc(var(--by) * 1%); width: 12px; height: 12px; margin: -6px 0 0 -6px;
+          border-radius: 50%; border: 2px solid var(--schlecht); background: rgba(217,75,75,0.3); }
+  html.bewegt .befund { opacity: 0; }
+  .befund::after { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--schlecht); opacity: 0; }
+  #reise.scannt .befund::after { animation: ping 2.4s var(--ease-out) infinite; }
+  #reise .befund:nth-child(2)::after { animation-delay: 0.6s; }
+  #reise .befund:nth-child(3)::after { animation-delay: 1.2s; }
+  #reise .befund:nth-child(4)::after { animation-delay: 1.8s; }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.8; } 70%, 100% { transform: scale(2.8); opacity: 0; } }
+  .scan { position: absolute; inset: 20px 0 0; pointer-events: none; opacity: 0;
+          background: linear-gradient(to bottom, rgba(70,211,234,0) 70%, rgba(70,211,234,0.22) 97%, rgba(70,211,234,0.95) 100%); }
+  #reise.scannt .scan { opacity: 1; animation: scannen 2.6s var(--ease-io) infinite; }
+  @keyframes scannen { 0% { transform: translateY(-100%); } 70%, 100% { transform: translateY(0); opacity: 0; } }
+
+  /* Papier: Laufband der Pruefpunkte, dann die Aussage, durch die das Handy faellt */
+  .papier { position: relative; z-index: 1; background: var(--papier); color: var(--tinte); }
+  .laufband { padding: clamp(5rem, 12vh, 8rem) 0 clamp(2rem, 6vh, 4rem); overflow: hidden; }
+  .reihe { display: flex; gap: 0.32em; width: max-content; font-family: var(--display); font-weight: 900; font-size: clamp(4rem, 11vw, 10.5rem);
+          line-height: 0.92; text-transform: uppercase; white-space: nowrap; }
+  .reihe span { color: transparent; -webkit-text-stroke: 2px var(--tinte); }
+  .reihe i { font-style: normal; color: var(--akzent); }
+  .reihe-2 { margin-left: -30vw; }
+  .reihe-2 span { color: var(--tinte); -webkit-text-stroke: 0; }
+  .aussage { position: relative; min-height: 150vh; display: grid; place-content: center; justify-items: center; gap: 36px; padding: 10vh 4vw; }
+  .aussage-text { margin: 0; max-width: 16ch; font-family: var(--display); font-weight: 900; font-size: clamp(3.1rem, 8.4vw, 8.6rem); line-height: 0.9;
+          text-transform: uppercase; text-align: center; letter-spacing: 0.005em; }
+  .aussage-klein { margin: 0; max-width: 34ch; text-align: center; font-size: clamp(1.05rem, 1.5vw, 1.3rem); color: var(--tinte-leise); }
+
+  /* Ende der ersten Etappe */
+  .ende { position: relative; z-index: 1; min-height: 90vh; display: grid; place-content: center; justify-items: start; gap: 22px;
+          padding: 14vh max(24px, 8vw); background: var(--bg); }
+  .ende-marke { margin: 0; font-family: var(--mono); font-size: 14px; color: var(--scan); }
+  .ende h2 { margin: 0; font-family: var(--display); font-weight: 900; font-size: clamp(3rem, 7vw, 6.5rem); line-height: 0.92; text-transform: uppercase; }
+  .ende ul { margin: 6px 0 12px; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--leise); font-size: clamp(1.05rem, 1.4vw, 1.25rem); }
+  .ende li::before { content: "✦"; color: var(--akzent); margin-right: 12px; }
+  .ende-fuss { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 8vh; font-size: 14px; color: var(--leise); }
+  .ende-fuss a { text-decoration: none; }
+  .ende-fuss a:hover { color: var(--text); }
+
+  @media (max-width: 767px) {
+    .kopf-nav { display: none; }
+    .kopf .pille { height: 40px; padding: 0 16px; font-size: 14px; }
+    .schrift { right: -0.1em; bottom: -0.7em; }
+    .ding.nur-gross { display: none; }
+    .ding { left: var(--mx, var(--x)); top: var(--my, var(--y)); width: var(--mw, var(--w)); }
+    #reise { left: var(--mx, var(--x)); top: var(--my, var(--y)); --hw: 104px; }
+    .ding .handy { --hw: 84px !important; }
+    .hero-mitte { margin-top: 18vh; }
+    .riese-wort { font-size: clamp(4.6rem, 25vw, 7rem); }
+    .schrift { font-size: clamp(2.5rem, 12vw, 3.6rem); }
+    .hero-fuss { display: none; }
+    .scroll-hinweis { display: none; }
+    .feldreihe { flex-direction: column; border-radius: 18px; }
+    .feldreihe .pille { width: 100%; }
+    .reihe span { -webkit-text-stroke-width: 1.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-hinweis i, .befund::after, .scan { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="fortschritt" aria-hidden="true"></div>
+
+<div id="vorspann" aria-hidden="true">
+  <div class="vorhang links"><div class="vorhang-bild"></div></div>
+  <div class="vorhang rechts"><div class="vorhang-bild"></div></div>
+  <div class="lade-mitte">
+    <div class="lade-icon">
+      <img src="assets/scroll/sanduhr.webp" data-farbe="#e8a33c" alt="" width="233" height="320">
+      <img src="assets/scroll/diskette.webp" data-farbe="#4c6ef0" alt="" width="320" height="287">
+      <img src="assets/scroll/monitor.webp" data-farbe="#57d36f" alt="" width="318" height="320">
+      <img src="assets/scroll/klapphandy.webp" data-farbe="#ff9a4d" alt="" width="284" height="320">
+      <img src="assets/scroll/smartphone.webp" data-farbe="#46d3ea" alt="" width="180" height="320">
+    </div>
+    <div class="lade-linie"><i></i></div>
+    <div class="lade-jahr">1998</div>
+  </div>
+  <div class="strahl"></div>
+</div>
+<div id="funken" aria-hidden="true"></div>
+
+<header class="kopf">
+  <a class="marke" href="https://digital-architects.io/">DIGITAL ARCHITECTS</a>
+  <nav class="kopf-nav" aria-label="Seitenbereiche"><a href="#pruefpunkte">Was wir prüfen</a><a href="#weiter">Wie es weitergeht</a></nav>
+  <a class="pille" href="#check">Kostenlos prüfen</a>
+</header>
+
+<main>
+  <div class="deckel">
+    <section class="hero" id="check" aria-labelledby="hero-titel">
+      <div class="hero-inhalt">
+        <div class="ebene" data-tiefe="0.35" aria-hidden="true">
+          <figure class="ding icon nur-gross" data-von="links" style="--x:23%; --y:68%; --w:clamp(48px, 4.6vw, 74px); --r:-14deg; margin:0">
+            <div class="schwebe"><div class="kippen"><img src="assets/scroll/sanduhr.webp" alt="" width="233" height="320"></div></div></figure>
+          <figure class="ding icon" data-von="rechts" style="--x:87%; --y:44%; --mx:80%; --my:36%; --w:clamp(46px, 5vw, 80px); --r:16deg; margin:0">
+            <div class="schwebe"><div class="kippen"><img src="assets/scroll/diskette.webp" alt="" width="320" height="287"></div></div></figure>
+          <figure class="ding icon nur-gross" data-von="oben" style="--x:30%; --y:12%; --w:clamp(60px, 6vw, 96px); --r:-8deg; margin:0">
+            <div class="schwebe"><div class="kippen"><img src="assets/scroll/monitor.webp" alt="" width="318" height="320"></div></div></figure>
+        </div>
+        <div class="ebene" data-tiefe="1">
+          <figure class="ding" data-von="oben" style="--x:79%; --y:9%; --mx:70%; --my:9%; --r:9deg; margin:0">
+            <div class="schwebe"><div class="kippen"><div class="handy" style="--hw:clamp(92px, 10.5vw, 160px)">
+              <div class="bildschirm"><img src="assets/warnung-http.jpg" alt="Browser-Warnung: Die Verbindung zu dieser Website ist nicht sicher" width="780" height="1688"></div>
+            </div></div></div></figure>
+          <figure class="ding" data-von="rechts" style="--x:73%; --y:66%; --mx:52%; --my:80%; --w:clamp(190px, 23vw, 350px); --mw:190px; --r:-5deg; margin:0">
+            <div class="schwebe"><div class="kippen"><div class="fenster"><div class="fenster-leiste"><i></i><i></i><i></i><span>Neuer Entwurf</span></div>
+              <img src="assets/nachher-baeckerei.jpg" alt="Neu gestaltete Website der erfundenen Landbäckerei" width="1440" height="900"></div></div></div></figure>
+        </div>
+        <div class="ebene" data-tiefe="0.7" aria-hidden="true">
+          <div class="ding" data-von="rechts" style="--x:75%; --y:47%; --mx:47%; --my:23%; --r:-12deg"><div class="schwebe"><div class="kippen"><span class="sticker rot">Nicht sicher</span></div></div></div>
+          <div class="ding" data-von="links" style="--x:13%; --y:71%; --mx:5%; --my:86%; --r:7deg"><div class="schwebe"><div class="kippen"><span class="sticker orange">Jahrgang 2006</span></div></div></div>
+          <div class="ding nur-gross" data-von="unten" style="--x:60%; --y:88%; --r:-5deg"><div class="schwebe"><div class="kippen"><span class="sticker hell">Besucherzähler</span></div></div></div>
+        </div>
+
+        <div class="hero-mitte">
+          <p class="hero-marke">Kostenloser Website-Check</p>
+          <h1 id="hero-titel"><span class="hero-zeile">Kluge Chefs wissen, wie ihre</span>
+            <span class="riese"><span class="riese-wort">Website</span><span class="schrift">dasteht.</span></span></h1>
+          <form class="check-form" id="check-form" novalidate>
+            <label class="sr-only" for="adresse">Adresse Ihrer Website</label>
+            <div class="feldreihe">
+              <input id="adresse" name="adresse" type="text" inputmode="url" autocomplete="url" spellcheck="false" placeholder="www.ihre-firma.de" aria-describedby="zustand">
+              <button class="pille" type="submit">Kostenlos prüfen</button>
+            </div>
+            <p class="zustand" id="zustand" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <p class="hero-fuss">Öffnen. Prüfen.<br>Erneuern.</p>
+        <div class="scroll-hinweis" aria-hidden="true">Scrollen<i></i></div>
+        <div class="hero-dunkel"></div>
+      </div>
+    </section>
+
+    <section class="papier" id="pruefpunkte" aria-labelledby="aussage-titel">
+      <div class="laufband" aria-hidden="true">
+        <div class="reihe reihe-1"><span>Handy-Ansicht</span><i>✦</i><span>Sicherheit</span><i>✦</i><span>Datenschutz</span><i>✦</i><span>Impressum</span><i>✦</i><span>Technik</span><i>✦</i><span>Aktualität</span><i>✦</i><span>Handy-Ansicht</span><i>✦</i><span>Sicherheit</span></div>
+        <div class="reihe reihe-2"><span>Datenschutz-Fallen</span><i>✦</i><span>Impressum</span><i>✦</i><span>Technik</span><i>✦</i><span>Aktualität</span><i>✦</i><span>Datenschutz-Fallen</span><i>✦</i><span>Handy-Ansicht</span><i>✦</i><span>Sicherheit</span></div>
+      </div>
+      <ul class="sr-only"><li>Handy-Ansicht</li><li>Sichere Verbindung</li><li>Datenschutzerklärung</li><li>Technik</li><li>Impressum</li><li>Datenschutz-Fallen</li><li>Aktualität</li></ul>
+      <div class="aussage">
+        <h2 class="aussage-text" id="aussage-titel">Wir öffnen Ihre Seite wie ein Kunde. Und sehen sofort, was veraltet ist.</h2>
+        <p class="aussage-klein">Ein echter Browser, ein simuliertes Handy, sieben Prüfpunkte. Ihr Ergebnis steht in Sekunden.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="ende" id="weiter">
+    <p class="ende-marke">Vorschau, Etappe 1</p>
+    <h2>Hier geht es<br>gleich weiter.</h2>
+    <ul>
+      <li>Befunde als Sticker zum Anfassen</li>
+      <li>Prüfpunkt-Welten mit Farbwechsel</li>
+      <li>Vorher und Nachher als Verwandlung</li>
+      <li>Finale mit dem Check</li>
+    </ul>
+    <a class="pille" href="/" data-hauptseite>Zur aktuellen Seite</a>
+    <nav class="ende-fuss" aria-label="Rechtliches"><span>© 2026 Digital Architects</span><a href="https://digital-architects.io/impressum">Impressum</a><a href="https://digital-architects.io/datenschutz">Datenschutz</a></nav>
+  </section>
+
+  <div id="reise" style="--x:6%; --y:17%; --mx:7%; --my:9%">
+    <div class="reise-ab"><div class="reise-auftritt"><div class="schwebe"><div class="kippen" style="--r:-9deg">
+      <div class="handy">
+        <div class="bildschirm"><img src="assets/beispiel-handy.jpg" alt="Veraltete Bäckerei-Website auf dem Handy" width="780" height="1688"><div class="scan"></div></div>
+        <div class="marken" aria-hidden="true">
+          <i class="befund" style="--bx:50; --by:2.4"></i><i class="befund" style="--bx:57; --by:10.4"></i>
+          <i class="befund" style="--bx:18; --by:16"></i><i class="befund" style="--bx:34; --by:24.6"></i>
+        </div>
+      </div>
+    </div></div></div></div>
+  </div>
+</main>
+
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/lenis.min.js"></script>
+<script>
+(() => {
+  const html = document.documentElement;
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fein = matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  /* Formular: der Check selbst laeuft (noch) auf der bisherigen Seite. In der oeffentlichen Vorschau
+     (data-vorschau, ohne Server) heisst die check.html und zeigt das Beispiel-Ergebnis. */
+  const hauptseite = html.hasAttribute("data-vorschau") ? "check.html" : "/";
+  $$("[data-hauptseite]").forEach(a => { a.href = hauptseite; });
+  const feld = $("#adresse"), zustand = $("#zustand");
+  $("#check-form").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const adresse = feld.value.trim();
+    if (!adresse) {
+      zustand.className = "zustand fehler";
+      zustand.textContent = "Bitte geben Sie die Adresse Ihrer Website ein.";
+      feld.focus();
+      return;
+    }
+    location.href = hauptseite + "?adresse=" + encodeURIComponent(adresse);
+  });
+
+  let lenis = null;
+  const springen = ziel => {
+    if (ziel.id === "check") {
+      lenis ? lenis.scrollTo(0) : scrollTo({ top: 0, behavior: ruhig ? "auto" : "smooth" });
+      setTimeout(() => feld.focus({ preventScroll: true }), ruhig ? 0 : 700);
+    } else {
+      lenis ? lenis.scrollTo(ziel) : ziel.scrollIntoView({ behavior: ruhig ? "auto" : "smooth" });
+    }
+  };
+  $$('a[href^="#"]').forEach(a => a.addEventListener("click", ev => {
+    const ziel = document.querySelector(a.getAttribute("href"));
+    if (ziel) { ev.preventDefault(); springen(ziel); }
+  }));
+
+  // Ohne Bewegung (Einstellung) oder ohne Bibliothek: ruhige, vollstaendige Seite
+  if (ruhig || !window.gsap || !window.ScrollTrigger) { html.classList.remove("laedt", "vorspann"); return; }
+  window.__vorspann = true;
+  gsap.registerPlugin(ScrollTrigger);
+  html.classList.add("bewegt");
+  history.scrollRestoration = "manual";
+  scrollTo(0, 0);
+
+  if (window.Lenis) {
+    lenis = new Lenis({ lerp: 0.11 });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    lenis.stop();
+  }
+
+  /* Text in Woerter und Buchstaben zerlegen, Klartext bleibt fuer Screenreader */
+  function teilen(el, art) {
+    const text = el.textContent.trim().replace(/\s+/g, " ");
+    el.textContent = "";
+    text.split(" ").forEach((wort, i, alle) => {
+      const w = document.createElement("span");
+      w.className = "w";
+      w.setAttribute("aria-hidden", "true");
+      if (art === "buchstaben") {
+        [...wort].forEach(z => { const b = document.createElement("span"); b.className = "b"; b.textContent = z; w.append(b); });
+      } else {
+        const wi = document.createElement("span"); wi.className = "wi"; wi.textContent = wort; w.append(wi);
+      }
+      el.append(w);
+      if (i < alle.length - 1) el.append(" ");
+    });
+    const klar = document.createElement("span");
+    klar.className = "sr-only";
+    klar.textContent = text;
+    el.append(klar);
+  }
+  teilen($(".hero-zeile"), "woerter");
+  teilen($(".riese-wort"), "buchstaben");
+  teilen($(".aussage-text"), "buchstaben");
+
+  /* Auftritt des Hero, gleich angelegt, damit nichts vor dem Vorhang aufblitzt (immediateRender) */
+  const reise = $("#reise");
+  const dinge = $$(".hero .ding");
+  const weg = el => {
+    const v = el.dataset.von, b = innerWidth, h = innerHeight;
+    return { x: v === "links" ? -b * 0.5 : v === "rechts" ? b * 0.5 : 0, y: v === "oben" ? -h * 0.7 : v === "unten" ? h * 0.6 : 0,
+             rotation: (v === "links" || v === "oben" ? -1 : 1) * gsap.utils.random(22, 40) };
+  };
+  const auftritt = gsap.timeline({ paused: true, onComplete: schweben });
+  auftritt
+    .fromTo(".hero-marke", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out" }, 0)
+    // Mask reveal: Woerter steigen aus ihrer Maske
+    .fromTo(".hero-zeile .wi", { yPercent: 115 }, { yPercent: 0, duration: 0.85, ease: "expo.out", stagger: 0.05 }, 0.05)
+    .fromTo(".riese-wort .b", { yPercent: 110 }, { yPercent: 0, duration: 1.05, ease: "expo.out", stagger: 0.05 }, 0.14)
+    // Dolly-in: das Riesenwort setzt sich von nah auf seine Groesse
+    .fromTo(".riese-wort", { scale: 1.16 }, { scale: 1, duration: 1.5, ease: "expo.out" }, 0.14)
+    .fromTo(".schrift", { clipPath: "inset(-40% 100% -40% -10%)" }, { clipPath: "inset(-40% -12% -40% -10%)", duration: 0.95, ease: "power2.inOut" }, 0.62)
+    .fromTo(reise.querySelector(".reise-auftritt"), { x: -innerWidth * 0.45, rotation: -36, autoAlpha: 0 },
+            { x: 0, rotation: 0, autoAlpha: 1, duration: 1.15, ease: "back.out(1.2)" }, 0.32)
+    .fromTo(".check-form, .hero-fuss, .scroll-hinweis", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "expo.out", stagger: 0.08 }, 0.95);
+  // Whip-in: Geraete und Sticker fliegen von den Raendern herein und federn nach
+  dinge.forEach((el, i) => auftritt.fromTo(el, { ...weg(el), autoAlpha: 0 }, { x: 0, y: 0, rotation: 0, autoAlpha: 1, duration: 1.15, ease: "back.out(1.25)" }, 0.36 + i * 0.06));
+  auftritt.progress(0);
+
+  /* Vorspann: Zeitreise 1998 bis heute, Farbe von Linie und Licht wechselt mit jedem Geraet */
+  const vorspann = $("#vorspann"), ladeIcons = $$(".lade-icon img"), jahr = $(".lade-jahr");
+  const PRO = 0.34, DAUER = ladeIcons.length * PRO, zahl = { j: 1998 };
+  const laden = gsap.timeline();
+  laden.fromTo(".lade-linie i", { scaleX: 0 }, { scaleX: 1, duration: DAUER, ease: "power1.inOut" }, 0)
+       .to(zahl, { j: new Date().getFullYear(), duration: DAUER, ease: "power2.in", onUpdate: () => { jahr.textContent = Math.round(zahl.j); } }, 0);
+  ladeIcons.forEach((img, i) => {
+    const t = i * PRO;
+    laden.set(vorspann, { "--farbe": img.dataset.farbe }, t)
+         .fromTo(img, { autoAlpha: 0, scale: 0.8, y: 12 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.24, ease: "back.out(2.2)" }, t);
+    if (i < ladeIcons.length - 1) laden.to(img, { autoAlpha: 0, scale: 1.08, duration: 0.12, ease: "power1.in" }, t + PRO - 0.12);
+  });
+  const geladen = new Promise(r => laden.eventCallback("onComplete", r));
+  const bilder = [...$$(".hero img"), ...$$("#reise img")].map(i => (i.decode ? i.decode() : Promise.resolve()).catch(() => {}));
+  const bereit = Promise.race([Promise.all([document.fonts.ready, ...bilder]), new Promise(r => setTimeout(r, 4500))]);
+  Promise.all([geladen, bereit]).then(oeffnen);
+
+  function oeffnen() {
+    const strahl = $(".strahl");
+    gsap.timeline()
+      // Der Scan-Strahl schneidet den Bildschirm auf, dann ziehen die Haelften auseinander (Split-Reveal)
+      .fromTo(strahl, { scaleY: 0, autoAlpha: 1 }, { scaleY: 1, duration: 0.42, ease: "expo.out" })
+      .to(".lade-mitte", { autoAlpha: 0, scale: 0.9, duration: 0.25, ease: "power2.in" }, "<")
+      .addLabel("auf", "+=0.04")
+      .to(".vorhang.links", { xPercent: -101, duration: 1.05, ease: "expo.inOut" }, "auf")
+      .to(".vorhang.rechts", { xPercent: 101, duration: 1.05, ease: "expo.inOut" }, "auf")
+      .to(strahl, { scaleX: 18, autoAlpha: 0, duration: 0.55, ease: "power2.out" }, "auf+=0.15")
+      .add(funken, "auf+=0.2")
+      .add(() => auftritt.play(), "auf+=0.28")
+      .add(() => { html.classList.remove("laedt"); if (lenis) lenis.start(); }, "auf+=0.9")
+      .add(() => { html.classList.remove("vorspann"); vorspann.remove(); ScrollTrigger.refresh(); }, "auf+=1.15");
+  }
+
+  /* Splitter-Burst: Bruchstuecke alter Websites fliegen aus der Mitte */
+  function funken() {
+    const box = $("#funken");
+    const farben = ["#ffd700", "#1f3f8f", "#b00000", "#46d3ea", "#f2a641", "#e9eef7", "#dde6ff"];
+    const anzahl = innerWidth < 768 ? 24 : 44, weit = Math.max(innerWidth, innerHeight);
+    const tl = gsap.timeline({ onComplete: () => box.replaceChildren() });
+    for (let i = 0; i < anzahl; i++) {
+      const el = document.createElement("i");
+      if (i < 5) {
+        el.className = "relikt";
+        el.style.backgroundImage = `url(assets/beispiel-alt/${i % 2 ? "baustelle" : "sanduhr"}.gif)`;
+      } else {
+        const s = 5 + Math.random() * 13;
+        el.style.cssText = `width:${s}px;height:${s}px;margin:${-s / 2}px 0 0 ${-s / 2}px;background:${farben[i % farben.length]}`;
+      }
+      box.append(el);
+      const winkel = Math.random() * Math.PI * 2, d = (0.18 + Math.random() * 0.5) * weit;
+      const start = Math.random() * 0.1, dauer = 0.9 + Math.random() * 0.7;
+      tl.fromTo(el, { x: 0, y: 0, scale: 0.4, rotation: 0 },
+              { x: Math.cos(winkel) * d, y: Math.sin(winkel) * d * 0.75, scale: 0.8 + Math.random() * 1.2, rotation: (Math.random() - 0.5) * 540,
+                duration: dauer, ease: "expo.out" }, start)
+        .to(el, { autoAlpha: 0, duration: dauer * 0.5, ease: "power1.in" }, start + dauer * 0.5);
+    }
+    return tl;
+  }
+
+  /* Leichtes Schweben im Hero; pausiert, sobald das Papier den Hero verdeckt */
+  const schwebenTweens = [];
+  function schweben() {
+    $$(".schwebe").forEach((el, i) => schwebenTweens.push(gsap.to(el, {
+      y: gsap.utils.random(-13, 13), rotation: gsap.utils.random(-2.5, 2.5), duration: gsap.utils.random(2.2, 3.6),
+      ease: "sine.inOut", repeat: -1, yoyo: true, delay: (i % 5) * 0.15 })));
+  }
+
+  /* Maus-Parallaxe: tiefe Ebenen bewegen sich weniger (Depth of field) */
+  if (fein) {
+    const ebenen = $$(".ebene").map(e => ({ t: +e.dataset.tiefe, x: gsap.quickTo(e, "x", { duration: 0.9, ease: "power3.out" }),
+                                            y: gsap.quickTo(e, "y", { duration: 0.9, ease: "power3.out" }) }));
+    $(".hero").addEventListener("pointermove", e => {
+      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
+      ebenen.forEach(l => { l.x(-nx * 46 * l.t); l.y(-ny * 30 * l.t); });
+    });
+  }
+
+  /* Scroll-Choreografie */
+  gsap.to(".fortschritt", { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: true } });
+  ScrollTrigger.create({ trigger: ".papier", start: "top 40px", end: "bottom 40px", toggleClass: { targets: ".kopf", className: "hell" } });
+  ScrollTrigger.create({ trigger: ".papier", start: "top top", end: "max",
+    onToggle: s => schwebenTweens.forEach((t, i) => { if (!reise.contains(t.targets()[0])) s.isActive ? t.pause() : t.resume(); }) });
+
+  // Crane-up: das Papier schiebt sich ueber den Hero, der zurueckweicht und dunkler wird
+  gsap.timeline({ scrollTrigger: { trigger: ".papier", start: "top bottom", end: "top top", scrub: true } })
+    .to(".hero-inhalt", { yPercent: -12, scale: 0.92, ease: "none" }, 0)
+    .to(".hero-dunkel", { opacity: 0.72, ease: "none" }, 0);
+
+  // Tracking shot: das Laufband laeuft gegen die Scrollrichtung
+  gsap.to(".reihe-1", { xPercent: -28, ease: "none", scrollTrigger: { trigger: ".laufband", start: "top bottom", end: "bottom top", scrub: 0.4 } });
+  gsap.fromTo(".reihe-2", { xPercent: -26 }, { xPercent: 0, ease: "none", scrollTrigger: { trigger: ".laufband", start: "top bottom", end: "bottom top", scrub: 0.4 } });
+
+  // Woerter der Aussage fuellen sich beim Lesen
+  gsap.fromTo(".aussage-text .w", { opacity: 0.16 }, { opacity: 1, ease: "none", stagger: 0.4,
+    scrollTrigger: { trigger: ".aussage-text", start: "top 82%", end: "bottom 48%", scrub: true } });
+  gsap.fromTo(".aussage-klein", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: "none",
+    scrollTrigger: { trigger: ".aussage-klein", start: "top 92%", end: "top 70%", scrub: true } });
+
+  // Das Handy reist: aus dem Hero in die Bildmitte, durch die Aussage, dann nach oben hinaus
+  const basis = { x: 0, y: 0, b: 0, h: 0 };
+  const basisMessen = () => { basis.b = reise.offsetWidth; basis.h = reise.offsetHeight; basis.x = reise.offsetLeft + basis.b / 2; basis.y = reise.offsetTop + basis.h / 2; };
+  basisMessen();
+  const zielX = () => innerWidth / 2 - basis.x, zielY = () => innerHeight * 0.5 - basis.y;
+  const reiseAb = reise.querySelector(".reise-ab");
+  gsap.timeline({ scrollTrigger: { trigger: ".papier", start: "top bottom", end: "top 15%", scrub: 0.7, invalidateOnRefresh: true } })
+    .to(reise, { x: zielX, y: zielY, rotation: 9, scale: 1.16, ease: "power2.inOut" });
+  const abflug = gsap.timeline({ scrollTrigger: { trigger: ".aussage", start: "top 70%", endTrigger: ".ende", end: "top 50%", scrub: 0.7, invalidateOnRefresh: true } });
+  abflug.set({}, {}, 1);  // Laenge 1: alle Positionen sind echte Anteile der Strecke
+  abflug.fromTo("#reise .befund", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.05, stagger: 0.03, ease: "back.out(2)" }, 0.06)
+        .to(reiseAb, { rotation: 4, duration: 0.7, ease: "sine.inOut" }, 0)
+        .to(reiseAb, { y: () => -innerHeight * 1.2, rotation: -7, scale: 0.84, duration: 0.3, ease: "power2.in" }, 0.7);
+  ScrollTrigger.create({ trigger: ".aussage", start: "top bottom", end: "bottom top", toggleClass: { targets: "#reise", className: "scannt" } });
+
+  // Die Buchstaben der Aussage weichen dem fallenden Handy aus und springen danach zurueck
+  const buchst = $$(".aussage-text .b");
+  const lage = buchst.map(() => ({ x: 0, y: 0, r: 0 }));
+  const setzer = buchst.map(b => ({ x: gsap.quickSetter(b, "x", "px"), y: gsap.quickSetter(b, "y", "px"), r: gsap.quickSetter(b, "rotation", "deg") }));
+  let heim = [], aktiv = false, inBewegung = false;
+  function messen() {
+    buchst.forEach((b, i) => { setzer[i].x(0); setzer[i].y(0); setzer[i].r(0); lage[i].x = lage[i].y = lage[i].r = 0; });
+    heim = buchst.map(b => { const q = b.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2 + scrollY }; });
+    basisMessen();
+  }
+  ScrollTrigger.addEventListener("refresh", messen);
+  messen();
+  ScrollTrigger.create({ trigger: ".aussage", start: "top bottom", end: "bottom top", onToggle: s => { aktiv = s.isActive; inBewegung = true; } });
+  gsap.ticker.add(() => {
+    if (!aktiv && !inBewegung) return;
+    const s = gsap.getProperty(reise, "scaleX");
+    const mx = basis.x + gsap.getProperty(reise, "x"), my = basis.y + gsap.getProperty(reise, "y") + gsap.getProperty(reiseAb, "y");
+    const hb = basis.b * s / 2 + 16, hh = basis.h * s / 2 + 16, sy = scrollY;
+    let rest = 0;
+    for (let i = 0; i < heim.length; i++) {
+      let zx = 0, zy = 0, zr = 0;
+      if (aktiv) {
+        const nx = (heim[i].x - mx) / hb, ny = (heim[i].y - sy - my) / hh, d = Math.hypot(nx, ny);
+        if (d < 1.9) {
+          const k = (1.9 - d) / 1.9, f = k * k, lx = nx / (d || 1), ly = ny / (d || 1);
+          zx = lx * f * hb * 1.5; zy = ly * f * hh * 0.3; zr = lx * f * 40;
+        }
+      }
+      const l = lage[i];
+      l.x += (zx - l.x) * 0.2; l.y += (zy - l.y) * 0.2; l.r += (zr - l.r) * 0.2;
+      rest += Math.abs(l.x) + Math.abs(l.y);
+      setzer[i].x(l.x); setzer[i].y(l.y); setzer[i].r(l.r);
+    }
+    if (!aktiv && rest < 0.5) inBewegung = false;
+  });
+
+  addEventListener("load", () => ScrollTrigger.refresh());
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="de" data-vorschau>
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kostenloser Website-Check | Digital Architects</title>
+<meta name="description" content="Prüfen Sie kostenlos, ob Ihre Website noch auf dem aktuellen Stand ist: Handy-Ansicht, Sicherheit, Datenschutz und Technik in wenigen Sekunden.">
+<link rel="preload" href="assets/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Alle Schriften liegen lokal: Die Seite lädt nichts von Drittanbietern, genau das prüft der Check bei anderen. */
+  @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+  @font-face { font-family: "Plex Mono"; src: url("assets/fonts/plex-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Plex Mono"; src: url("assets/fonts/plex-mono-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
+  :root {
+    --bg: #0b1324; --bg-2: #0f1a2e; --bg-3: #15233c; --linie: #24344f;
+    --text: #e9eef7; --leise: #9db0cc; --platzhalter: #8a9bb8;
+    --akzent: #f2a641; --akzent-text: #1a1206; --scan: #46d3ea;
+    --schlecht: #f06b6b; --mittel: #f2c94c; --gut: #48d597;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+    --r: 10px; --r-gross: 14px;
+    --sans: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --mono: "Plex Mono", ui-monospace, Consolas, monospace;
+    --sw: 258px; --sh: 558px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 17px;
+         line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.12; letter-spacing: -0.02em; font-weight: 600; }
+  p { text-wrap: pretty; }
+  .wrap { width: min(1200px, 100% - 32px); margin-inline: auto; }
+  :focus-visible { outline: 2px solid var(--akzent); outline-offset: 3px; border-radius: 4px; }
+
+  /* Kopfzeile */
+  .kopf { height: 72px; display: flex; align-items: center; justify-content: space-between; }
+  .marke-wort { font-family: var(--mono); font-weight: 500; font-size: 14px; letter-spacing: 0.08em; text-decoration: none; }
+  .kopf nav a { color: var(--leise); text-decoration: none; font-size: 15px; padding: 12px 4px; }
+  .kopf nav a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero { position: relative; isolation: isolate; min-height: calc(100dvh - 72px); display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; gap: 24px; padding-block: 24px 64px; }
+  .hero::before { content: ""; position: absolute; inset: -72px calc(50% - 50vw) 0; z-index: -1; pointer-events: none;
+          background: radial-gradient(900px 520px at 78% 30%, rgba(38, 74, 128, 0.45), transparent 70%); }
+  .hero::after { content: ""; position: absolute; inset: -72px calc(50% - 50vw) 0; z-index: -1; pointer-events: none; opacity: 0;
+          background-image: linear-gradient(rgba(70,211,234,0.16) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(70,211,234,0.16) 1px, transparent 1px);
+          background-size: 44px 44px; background-position: center;
+          -webkit-mask-image: radial-gradient(230px circle at var(--mx, 70%) var(--my, 40%), #000, transparent);
+                  mask-image: radial-gradient(230px circle at var(--mx, 70%) var(--my, 40%), #000, transparent);
+          transition: opacity 400ms var(--ease-out); }
+  .hero.lampe::after { opacity: 1; }
+  .kicker { font-family: var(--mono); font-size: 14px; color: var(--scan); letter-spacing: 0.04em; }
+  .hero h1 { font-size: clamp(2.4rem, 4.4vw, 3.6rem); margin: 18px 0 20px; letter-spacing: -0.03em; }
+  .hero h1 span { color: var(--akzent); }
+  .unterzeile { font-size: 19px; color: var(--leise); max-width: 34ch; margin: 0 0 32px; }
+  .check-form label { display: block; font-size: 14px; color: var(--leise); margin-bottom: 8px; }
+  .feldreihe { display: flex; gap: 10px; flex-wrap: wrap; max-width: 560px; }
+  .feldreihe input { flex: 1 1 260px; min-width: 0; height: 56px; padding: 0 18px; font: inherit; font-size: 18px;
+          color: var(--text); background: var(--bg-2); border: 1px solid var(--linie); border-radius: var(--r);
+          transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+  .feldreihe input::placeholder { color: var(--platzhalter); }
+  .feldreihe input:hover { border-color: #33476a; }
+  .feldreihe input:focus { outline: none; border-color: var(--scan); box-shadow: 0 0 0 3px rgba(70,211,234,0.2); }
+  .feldreihe input[aria-invalid="true"] { border-color: var(--schlecht); }
+  .magnet { display: inline-flex; transition: transform 220ms var(--ease-out); }
+  .knopf { height: 56px; padding: 0 26px; border: 0; border-radius: var(--r); font: inherit; font-weight: 600; font-size: 17px;
+          background: var(--akzent); color: var(--akzent-text); cursor: pointer; white-space: nowrap;
+          display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+          transition: transform 160ms var(--ease-out), background 160ms; }
+  .knopf:hover { background: #f6b45c; }
+  .knopf:active { transform: scale(0.97); }
+  .knopf:disabled { cursor: progress; background: #c58a3a; }
+  .knopf .kreisel { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(26,18,6,0.3);
+          border-top-color: var(--akzent-text); display: none; animation: drehen 700ms linear infinite; }
+  .knopf[aria-busy="true"] .kreisel { display: inline-block; }
+  @keyframes drehen { to { transform: rotate(360deg); } }
+  .zustand { min-height: 26px; margin-top: 14px; font-family: var(--mono); font-size: 14px; color: var(--scan); }
+  .zustand.fehler { color: var(--schlecht); font-family: var(--sans); font-size: 15px; }
+
+  /* Handy mit Pruef-Markierungen */
+  .buehne { position: relative; display: grid; place-items: center; perspective: 1400px; padding: 24px 0; }
+  .handy { position: relative; width: calc(var(--sw) + 22px); padding: 11px; border-radius: 46px;
+          background: linear-gradient(150deg, #22314d, #0a111f 60%);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 50px 90px -30px rgba(0,0,0,0.75);
+          transform-style: preserve-3d; will-change: transform; }
+  .handy::before { content: ""; position: absolute; top: 20px; left: 50%; width: 78px; height: 22px; margin-left: -39px;
+          border-radius: 12px; background: #05080f; z-index: 3; }
+  /* oben 30px Statusleiste, damit die Kamera-Aussparung nichts von der gezeigten Seite verdeckt */
+  .bildschirm { position: relative; width: var(--sw); height: var(--sh); border-radius: 36px; overflow: hidden;
+          padding-top: 30px; background: #eef0f3; }
+  .bildschirm img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: opacity 300ms var(--ease-out); }
+  .scan { position: absolute; left: 0; right: 0; top: -90px; height: 90px; pointer-events: none;
+          background: linear-gradient(to bottom, rgba(70,211,234,0), rgba(70,211,234,0.22));
+          border-bottom: 2px solid rgba(70,211,234,0.95); animation: scannen 7s var(--ease-io) 700ms infinite; }
+  .handy.scannt .scan { animation-duration: 1.5s; animation-delay: 0s; }
+  @keyframes scannen { 0% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(calc(var(--sh) + 90px)); opacity: 1; }
+                       50.1%, 100% { transform: translateY(calc(var(--sh) + 90px)); opacity: 0; } }
+  .marken { position: absolute; left: 11px; top: 41px; width: var(--sw); height: calc(var(--sw) * 844 / 390); pointer-events: none; }
+  .befund { position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); opacity: 0;
+          animation: auftauchen 420ms var(--ease-out) forwards; animation-delay: var(--d, 0ms); }
+  .befund i { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%;
+          border: 2px solid var(--schlecht); background: rgba(240,107,107,0.25); }
+  .befund b { position: absolute; top: 0; height: 1px; background: rgba(240,107,107,0.7); }
+  .befund span { position: absolute; top: -11px; width: 168px; font-family: var(--mono); font-size: 13px; font-weight: 500;
+          line-height: 1.35; color: var(--text); }
+  .befund.rechts b { left: 6px; width: calc((100 - var(--x)) * var(--sw) / 100 + 34px); }
+  .befund.rechts span { left: calc((100 - var(--x)) * var(--sw) / 100 + 48px); }
+  .befund.links b { right: 6px; width: calc(var(--x) * var(--sw) / 100 + 34px); }
+  .befund.links span { right: calc(var(--x) * var(--sw) / 100 + 48px); text-align: right; }
+  @keyframes auftauchen { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .befund-liste { display: none; }
+
+  /* Ergebnis-Bericht (live und Beispiel) */
+  .ergebnis { padding: 40px 0 96px; scroll-margin-top: 16px; }
+  .ergebnis[hidden] { display: none; }
+  .ergebnis-raster { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 64px; align-items: start; }
+  .ergebnis-raster > :first-child { align-self: stretch; }
+  .ergebnis .handy { position: sticky; top: 32px; }
+  .unterschrift { margin: 16px 0 0; text-align: center; color: var(--leise); font-size: 14px; }
+  .urteil { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; font-weight: 600; font-size: 15px; }
+  .urteil.rot { background: rgba(240,107,107,0.14); color: #ff8f8f; }
+  .urteil.gelb { background: rgba(242,201,76,0.14); color: var(--mittel); }
+  .urteil.gruen { background: rgba(72,213,151,0.14); color: var(--gut); }
+  .jahrgang { font-size: clamp(1.7rem, 3vw, 2.4rem); margin: 20px 0 8px; font-weight: 500; }
+  .jahrgang .jahr { display: inline-block; min-width: 4ch; font-family: var(--mono); font-weight: 500; color: var(--akzent);
+          font-variant-numeric: tabular-nums; }
+  .adresse { font-family: var(--mono); font-size: 14px; color: var(--leise); word-break: break-all; margin: 0; }
+  .punkte { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 22px; }
+  .punkte li { display: grid; grid-template-columns: 28px 1fr; gap: 14px; opacity: 0; transform: translateY(8px);
+          transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out); transition-delay: var(--d, 0ms); }
+  .punkte.zeigen li { opacity: 1; transform: none; }
+  .zeichen { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono);
+          font-weight: 500; font-size: 15px; line-height: 1; }
+  .zeichen.schlecht { background: rgba(240,107,107,0.16); color: #ff8f8f; }
+  .zeichen.mittel { background: rgba(242,201,76,0.16); color: var(--mittel); }
+  .zeichen.gut { background: rgba(72,213,151,0.16); color: var(--gut); }
+  .punkte strong { display: block; font-weight: 600; margin-bottom: 2px; }
+  .punkte p { margin: 0; color: var(--leise); max-width: 62ch; }
+  .vorschau-hinweis { margin: 0 0 18px; font-family: var(--mono); font-size: 13px; line-height: 1.5; color: var(--scan); max-width: 60ch; }
+  .entwurf-box { margin-top: 40px; padding: 28px; border-radius: var(--r-gross); background: var(--bg-3); }
+  .entwurf-box h3 { font-size: 24px; margin-bottom: 8px; }
+  .entwurf-box p { margin: 0 0 20px; color: var(--leise); max-width: 52ch; }
+
+  /* Ablauf + Beispiel */
+  .abschnitt { padding: 88px 0; }
+  .abschnitt h2 { font-size: clamp(2rem, 3.6vw, 3rem); }
+  .ablauf { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 72px; align-items: start; }
+  .schritte { list-style: none; counter-reset: s; margin: 48px 0 0; padding: 0; display: grid; gap: 36px; }
+  .schritte li { counter-increment: s; display: grid; grid-template-columns: 52px 1fr; gap: 18px; }
+  .schritte li::before { content: counter(s); font-family: var(--mono); font-size: 15px; color: var(--scan);
+          width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: rgba(70,211,234,0.1); }
+  .schritte strong { display: block; font-size: 20px; font-weight: 600; margin: 8px 0 4px; }
+  .schritte p { margin: 0; color: var(--leise); }
+  .beispiel { padding: 32px; border-radius: var(--r-gross); background: var(--bg-2); }
+  .beispiel-kopf { display: grid; grid-template-columns: 112px 1fr; gap: 24px; align-items: start; }
+  .mini-handy { width: 112px; border-radius: 20px; padding: 5px; background: linear-gradient(150deg, #22314d, #0a111f 60%); }
+  .mini-handy img { border-radius: 16px; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+  .beispiel .jahrgang { font-size: 26px; margin-top: 14px; }
+  .beispiel .punkte { gap: 16px; margin-top: 28px; }
+  .beispiel .punkte p { font-size: 15px; }
+  .beispiel-hinweis { margin: 14px 0 0; font-size: 14px; color: var(--leise); }
+
+  /* Vorher / Nachher */
+  .vergleich-text { max-width: 640px; }
+  .vergleich-text p { color: var(--leise); margin: 16px 0 0; }
+  .vergleich { position: relative; margin-top: 48px; aspect-ratio: 16 / 10; border-radius: var(--r-gross); overflow: hidden;
+          background: var(--bg-2); touch-action: pan-y; user-select: none; --pos: 50%; }
+  .vergleich img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; pointer-events: none; }
+  .vergleich .nachher { clip-path: inset(0 0 0 var(--pos)); }
+  .teiler { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--text); pointer-events: none; }
+  .griff { position: absolute; top: 50%; left: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%;
+          background: var(--text); color: var(--bg); display: grid; place-items: center; font-family: var(--mono); font-size: 18px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .vergleich input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+  .vergleich:has(input:focus-visible) .griff { outline: 2px solid var(--akzent); outline-offset: 3px; }
+  .vergleich-beschriftung { display: flex; justify-content: space-between; margin-top: 14px; font-family: var(--mono); font-size: 14px; color: var(--leise); }
+
+  /* Angebot */
+  .angebot { max-width: 780px; }
+  .angebot p { color: var(--leise); font-size: 19px; margin: 20px 0 36px; max-width: 46ch; }
+
+  .fuss { border-top: 1px solid var(--linie); padding: 28px 0 40px; display: flex; justify-content: space-between; gap: 16px;
+          flex-wrap: wrap; color: var(--leise); font-size: 14px; }
+  .fuss nav { display: flex; gap: 24px; }
+  .fuss a { text-decoration: none; }
+  .fuss a:hover { color: var(--text); }
+
+  /* Einblenden beim Scrollen */
+  .einblenden { opacity: 0; transform: translateY(16px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); }
+  .einblenden.sichtbar { opacity: 1; transform: none; }
+  .hero-text > * { opacity: 0; transform: translateY(14px); animation: auftauchen 700ms var(--ease-out) forwards; }
+  .hero-text > :nth-child(2) { animation-delay: 80ms; } .hero-text > :nth-child(3) { animation-delay: 160ms; }
+  .hero-text > :nth-child(4) { animation-delay: 240ms; }
+  .buehne-innen { opacity: 0; animation: handy-rein 900ms var(--ease-out) 150ms forwards, schweben 7s ease-in-out 1.2s infinite; }
+  @keyframes schweben { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+  @keyframes handy-rein { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+  /* Dialog */
+  dialog { width: min(480px, 100% - 32px); padding: 32px; border: 0; border-radius: var(--r-gross); background: var(--bg-3); color: var(--text); }
+  dialog::backdrop { background: rgba(5, 9, 18, 0.7); }
+  dialog h2 { font-size: 26px; margin-bottom: 20px; }
+  .feld { margin-bottom: 16px; }
+  .feld label { display: block; font-size: 14px; color: var(--leise); margin-bottom: 6px; }
+  .feld input { width: 100%; height: 50px; padding: 0 14px; font: inherit; color: var(--text); background: var(--bg-2);
+          border: 1px solid var(--linie); border-radius: var(--r); }
+  .feld input:focus { outline: none; border-color: var(--scan); box-shadow: 0 0 0 3px rgba(70,211,234,0.2); }
+  .einwilligung { display: grid; grid-template-columns: 22px 1fr; gap: 12px; font-size: 14px; color: var(--leise); margin: 20px 0 24px; }
+  .einwilligung input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--akzent); }
+  .dialog-knoepfe { display: flex; gap: 12px; flex-wrap: wrap; }
+  .dialog-text { margin: 0 0 24px; color: var(--leise); }
+  .dialog-fehler { margin: -8px 0 20px; color: var(--schlecht); font-size: 15px; }
+  .dialog-fehler:empty { display: none; }
+  .knopf.leise { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--linie); }
+  .knopf.leise:hover { background: var(--bg-2); }
+
+  /* Warnseite beim Pruefpunkt "Sichere Verbindung": erst die eigene Seite, dann schiebt sich die Warnung davor */
+  .warnung { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 20px; align-items: center; margin-top: 14px;
+          padding: 14px; border-radius: var(--r); background: rgba(240,107,107,0.08); }
+  .warn-handy { width: 132px; padding: 5px; border-radius: 22px; background: linear-gradient(150deg, #22314d, #0a111f 60%); }
+  .warn-bildschirm { position: relative; aspect-ratio: 390 / 844; border-radius: 16px; overflow: hidden; background: #eef0f3; }
+  .warn-bildschirm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .warnung.laeuft .warnbild { animation: warnen 6s var(--ease-out) infinite; }
+  @keyframes warnen { 0%, 28% { opacity: 0; transform: translateY(8%); } 38%, 88% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+  .warnung p { font-size: 15px; }
+  .warnung strong { display: inline; color: var(--text); font-weight: 600; }
+  .nachgestellt { display: block; margin-top: 6px; font-family: var(--mono); font-size: 12px; color: var(--platzhalter); }
+
+  /* Kleine Endlos-Animationen, laufen nur mit .laeuft (sichtbar und Bewegung erlaubt) */
+  .befund i::after { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--schlecht); opacity: 0; }
+  .laeuft .befund i::after { animation: ping 2.8s var(--ease-out) infinite; animation-delay: calc(var(--d, 0ms) + 500ms); }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.7; } 70%, 100% { transform: scale(2.6); opacity: 0; } }
+  .schritte li { position: relative; }
+  .schritte li::after { content: ""; position: absolute; left: 0; top: 0; width: 44px; height: 44px; border-radius: 50%;
+          border: 1px solid var(--scan); opacity: 0; pointer-events: none; }
+  .laeuft .schritte li::after { animation: schritt-ring 4.5s var(--ease-out) infinite; }
+  .laeuft .schritte li::before { animation: schritt-zahl 4.5s ease infinite; }
+  .laeuft .schritte li:nth-child(2)::after, .laeuft .schritte li:nth-child(2)::before { animation-delay: 1.5s; }
+  .laeuft .schritte li:nth-child(3)::after, .laeuft .schritte li:nth-child(3)::before { animation-delay: 3s; }
+  @keyframes schritt-ring { 0% { opacity: 0.9; transform: scale(1); } 28%, 100% { opacity: 0; transform: scale(1.5); } }
+  @keyframes schritt-zahl { 0%, 22% { background: rgba(70,211,234,0.26); color: var(--text); } 36%, 100% { background: rgba(70,211,234,0.1); color: var(--scan); } }
+  .mini-handy { position: relative; }
+  .mini-scan { position: absolute; inset: 5px; border-radius: 16px; overflow: hidden; pointer-events: none; }
+  .mini-scan::after { content: ""; position: absolute; inset: 0; transform: translateY(-100%);
+          background: linear-gradient(to bottom, rgba(70,211,234,0) 72%, rgba(70,211,234,0.22) 97%, rgba(70,211,234,0.95) 100%); }
+  .laeuft .mini-scan::after { animation: mini-scan 5s var(--ease-io) infinite; }
+  @keyframes mini-scan { 0% { transform: translateY(-100%); opacity: 1; } 55% { transform: translateY(0); opacity: 1; } 62%, 100% { transform: translateY(0); opacity: 0; } }
+  /* Vorher/Nachher wippt von selbst, bis jemand selbst schiebt: zeigt, dass man hier ziehen kann */
+  @property --pos { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+  .vergleich.hinweis.laeuft { animation: wippen 6s var(--ease-io) 600ms infinite; }
+  @keyframes wippen { 0%, 60%, 100% { --pos: 50%; } 22% { --pos: 64%; } 42% { --pos: 38%; } }
+
+  @media (max-width: 1100px) {
+    .befund span { width: 128px; font-size: 12px; }
+  }
+  @media (max-width: 920px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 32px; }
+    :root { --sw: 220px; --sh: 476px; }
+    .befund b, .befund span { display: none; }
+    .befund-liste { display: grid; gap: 8px; list-style: none; padding: 0; margin: 28px 0 0; font-family: var(--mono);
+          font-size: 14px; color: var(--text); }
+    .befund-liste li::before { content: "×"; color: var(--schlecht); margin-right: 10px; }
+    .ergebnis-raster, .ablauf, .angebot { grid-template-columns: 1fr; gap: 48px; }
+    .ergebnis .handy { position: relative; top: 0; margin-inline: auto; }
+    .abschnitt { padding: 80px 0; }
+    .vergleich { aspect-ratio: 4 / 3; }
+  }
+  @media (max-width: 520px) {
+    .warnung { grid-template-columns: 1fr; gap: 14px; }
+    .beispiel { padding: 22px; }
+    .beispiel-kopf { grid-template-columns: 1fr; }
+    .knopf { width: 100%; justify-content: center; }
+    .magnet { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .scan { display: none; }
+    .befund, .hero-text > *, .buehne-innen { animation: none; opacity: 1; transform: none; }
+    .einblenden, .punkte li { transition: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="kopf">
+    <a class="marke-wort" href="https://digital-architects.io/">DIGITAL ARCHITECTS</a>
+    <nav><a href="https://digital-architects.io/">Zur Agentur</a></nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero" data-loop>
+      <div class="hero-text">
+        <div class="kicker">Kostenloser Website-Check</div>
+        <h1>Kluge Chefs wissen, <span>wie ihre Website dasteht.</span></h1>
+        <p class="unterzeile">Wir öffnen Ihre Seite wie ein Kunde auf dem Handy und zeigen Ihnen in Sekunden, was veraltet ist.</p>
+        <form class="check-form" id="check-form" novalidate>
+          <label for="adresse">Adresse Ihrer Website</label>
+          <div class="feldreihe">
+            <input id="adresse" name="adresse" type="text" inputmode="url" autocomplete="url" spellcheck="false"
+                   placeholder="www.ihre-firma.de" aria-describedby="zustand">
+            <span class="magnet"><button class="knopf" id="pruefen" type="submit"><span class="kreisel" aria-hidden="true"></span><span class="knopf-text">Kostenlos prüfen</span></button></span>
+          </div>
+          <div class="zustand" id="zustand" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <div class="buehne">
+        <div class="buehne-innen">
+          <div class="handy" id="hero-handy">
+            <div class="bildschirm">
+              <img src="assets/beispiel-handy.jpg" alt="Eine veraltete Bäckerei-Website, auf dem Handy winzig dargestellt" width="390" height="844">
+              <div class="scan" aria-hidden="true"></div>
+            </div>
+            <div class="marken" aria-hidden="true">
+              <div class="befund links" style="--x:50; --y:2.4"><i></i><b></b><span>Browser warnt: „Nicht sicher“</span></div>
+              <div class="befund rechts" style="--x:57; --y:10.4"><i></i><b></b><span>Schrift zu klein fürs Handy</span></div>
+              <div class="befund links" style="--x:18; --y:16"><i></i><b></b><span>Besucherzähler wie vor 20 Jahren</span></div>
+              <div class="befund rechts" style="--x:34; --y:24.6"><i></i><b></b><span>Neueste Meldung: Juni 2006</span></div>
+            </div>
+          </div>
+          <ul class="befund-liste">
+            <li>Browser warnt: „Nicht sicher“</li>
+            <li>Schrift zu klein fürs Handy</li>
+            <li>Besucherzähler wie vor 20 Jahren</li>
+            <li>Neueste Meldung: Juni 2006</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="ergebnis" id="ergebnis" hidden aria-labelledby="ergebnis-titel">
+      <div class="ergebnis-raster">
+        <div>
+          <div class="handy">
+            <div class="bildschirm"><img id="ergebnis-bild" alt="So sieht Ihre Website auf dem Handy aus" width="390" height="844"></div>
+          </div>
+          <p class="unterschrift">So sehen Ihre Kunden Ihre Seite auf dem Handy.</p>
+        </div>
+        <div>
+          <div id="bericht-live"></div>
+          <div class="entwurf-box">
+            <h3>Wie könnte Ihre Seite heute aussehen?</h3>
+            <p>Wir bauen aus Ihren bisherigen Inhalten einen kostenlosen Entwurf. Unverbindlich, Sie entscheiden danach.</p>
+            <button class="knopf" type="button" data-entwurf>Kostenlosen Entwurf anfordern</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="abschnitt" id="ablauf">
+      <div class="ablauf" data-loop>
+        <div class="einblenden">
+          <h2>Was beim Check passiert</h2>
+          <ol class="schritte">
+            <li><div><strong>Sie geben Ihre Adresse ein.</strong><p>Mehr brauchen wir nicht. Keine Anmeldung, keine E-Mail-Adresse.</p></div></li>
+            <li><div><strong>Wir öffnen Ihre Seite wie ein Kunde.</strong><p>In einem echten Browser auf einem simulierten Handy. So sehen wir genau das, was Ihre Kunden sehen.</p></div></li>
+            <li><div><strong>Sie bekommen ein klares Ergebnis.</strong><p>Sieben Prüfpunkte mit Ampel und der geschätzte Technik-Stand Ihrer Seite, in verständlichen Worten.</p></div></li>
+          </ol>
+        </div>
+        <figure class="einblenden" style="margin:0">
+          <div class="beispiel" id="bericht-beispiel" data-loop></div>
+          <figcaption class="beispiel-hinweis">Beispiel-Ergebnis für eine frei erfundene Bäckerei-Seite, erstellt mit dem echten Check.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="abschnitt" id="vergleich">
+      <div class="vergleich-text einblenden">
+        <h2>Aus alt wird neu.</h2>
+        <p>So kann ein Entwurf aussehen: die erfundene Landbäckerei aus dem Beispiel, einmal mit ihrer alten Seite und einmal neu gestaltet. Fahren Sie mit der Maus oder dem Finger über das Bild.</p>
+      </div>
+      <div class="vergleich hinweis einblenden" id="vergleich-feld" data-loop>
+        <img src="assets/vorher-baeckerei.jpg" alt="Alte Website der erfundenen Landbäckerei: gelber Hintergrund, Tabellen, Besucherzähler und Sanduhr" width="1440" height="900" loading="lazy">
+        <img class="nachher" src="assets/nachher-baeckerei.jpg" alt="Neu gestaltete Website der erfundenen Landbäckerei mit großem Brotfoto und Knopf zum Vorbestellen" width="1440" height="900" loading="lazy">
+        <div class="teiler"><div class="griff" aria-hidden="true">‹›</div></div>
+        <input type="range" min="0" max="100" value="50" aria-label="Vorher und Nachher vergleichen">
+      </div>
+      <div class="vergleich-beschriftung"><span>Vorher</span><span>Nachher</span></div>
+    </section>
+
+    <section class="abschnitt" id="angebot">
+      <div class="angebot einblenden">
+        <h2>Der Entwurf kostet nichts. Die Entscheidung bleibt bei Ihnen.</h2>
+        <p>Wir bauen aus den Inhalten Ihrer bisherigen Seite einen Entwurf, wie sie heute aussehen könnte. Gefällt er Ihnen, sprechen wir über den Rest.</p>
+        <a class="knopf" href="#hero" data-zum-check>Jetzt Website prüfen</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fuss">
+    <span>© 2026 Digital Architects</span>
+    <nav><a href="https://digital-architects.io/impressum">Impressum</a><a href="https://digital-architects.io/datenschutz">Datenschutz</a></nav>
+  </footer>
+</div>
+
+<dialog id="entwurf-dialog" aria-labelledby="dialog-titel">
+  <form id="entwurf-form" method="dialog">
+    <h2 id="dialog-titel">Kostenlosen Entwurf anfordern</h2>
+    <div class="feld"><label for="d-name">Ihr Name</label><input id="d-name" name="name" autocomplete="name"></div>
+    <div class="feld"><label for="d-mail">E-Mail-Adresse</label><input id="d-mail" name="mail" type="email" autocomplete="email" required></div>
+    <!-- Text und Version muessen zu EINWILLIGUNGEN in anfragen.py passen (prueft ein Test) -->
+    <input type="hidden" name="einwilligung_version" value="2026-10-05">
+    <label class="einwilligung"><input type="checkbox" name="einwilligung" required>
+      <span>Ja, Digital Architects darf mich per E-Mail zu meinem Entwurf und passenden Angeboten kontaktieren. Diese Einwilligung kann ich jederzeit widerrufen. Details in der <a href="https://digital-architects.io/datenschutz">Datenschutzerklärung</a>.</span></label>
+    <p class="dialog-fehler" id="entwurf-fehler" role="alert"></p>
+    <div class="dialog-knoepfe">
+      <button class="knopf" type="submit"><span class="kreisel" aria-hidden="true"></span><span class="knopf-text">Entwurf anfordern</span></button>
+      <button class="knopf leise" type="button" data-schliessen>Abbrechen</button>
+    </div>
+  </form>
+  <div id="entwurf-fertig" hidden>
+    <h2>Bitte E-Mail bestätigen</h2>
+    <p class="dialog-text" id="entwurf-fertig-text"></p>
+    <div class="dialog-knoepfe"><button class="knopf" type="button" data-schliessen>Schließen</button></div>
+  </div>
+</dialog>
+
+<dialog id="meldung-dialog" aria-labelledby="meldung-titel">
+  <h2 id="meldung-titel"></h2>
+  <p class="dialog-text" id="meldung-text"></p>
+  <p class="dialog-fehler" id="meldung-fehler" role="alert"></p>
+  <div class="dialog-knoepfe">
+    <button class="knopf" type="button" id="meldung-los"><span class="kreisel" aria-hidden="true"></span><span class="knopf-text"></span></button>
+    <button class="knopf leise" type="button" data-schliessen>Schließen</button>
+  </div>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const maus = matchMedia("(hover: hover) and (pointer: fine)").matches;
+const JETZT = new Date().getFullYear();
+const esc = s => String(s).replace(/[&<>"']/g, z => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[z]));
+
+/* Kleine Endlos-Animationen laufen nur, solange sie zu sehen sind (spart Akku), und nie bei "Bewegung reduzieren" */
+const schleife = new IntersectionObserver(eintraege => eintraege.forEach(e => e.target.classList.toggle("laeuft", e.isIntersecting)));
+function schleifen(wurzel) {
+  if (!ruhig) wurzel.querySelectorAll("[data-loop]").forEach(el => schleife.observe(el));
+}
+schleifen(document);
+
+/* Pruef-Markierungen erscheinen, wenn der Scan-Strahl ihre Hoehe erreicht */
+document.querySelectorAll(".befund").forEach(b => {
+  const y = parseFloat(b.style.getPropertyValue("--y"));
+  b.style.setProperty("--d", ruhig ? "0ms" : Math.round(700 + (y / 100) * 3500) + "ms");
+});
+
+/* Prueflampe und kippendes Handy folgen der Maus */
+const hero = $("#hero"), heroHandy = $("#hero-handy");
+let ziel = { x: 0, y: 0 }, ist = { x: 0, y: 0 }, laeuft = false;
+function kippen() {
+  ist.x += (ziel.x - ist.x) * 0.1;
+  ist.y += (ziel.y - ist.y) * 0.1;
+  heroHandy.style.transform = `rotateX(${ist.x.toFixed(2)}deg) rotateY(${ist.y.toFixed(2)}deg)`;
+  if (Math.abs(ziel.x - ist.x) + Math.abs(ziel.y - ist.y) > 0.02) requestAnimationFrame(kippen); else laeuft = false;
+}
+if (maus && !ruhig) {
+  hero.addEventListener("pointerenter", () => hero.classList.add("lampe"));
+  hero.addEventListener("pointerleave", () => { hero.classList.remove("lampe"); ziel = { x: 0, y: 0 }; if (!laeuft) { laeuft = true; requestAnimationFrame(kippen); } });
+  hero.addEventListener("pointermove", e => {
+    const r = hero.getBoundingClientRect(), h = heroHandy.getBoundingClientRect();
+    hero.style.setProperty("--mx", (e.clientX - r.left + (innerWidth - r.width) / 2) + "px");
+    hero.style.setProperty("--my", (e.clientY - r.top + 72) + "px");
+    const dx = (e.clientX - (h.left + h.width / 2)) / r.width, dy = (e.clientY - (h.top + h.height / 2)) / r.height;
+    ziel = { x: Math.max(-8, Math.min(8, -dy * 14)), y: Math.max(-10, Math.min(10, dx * 18)) };
+    if (!laeuft) { laeuft = true; requestAnimationFrame(kippen); }
+  });
+
+  /* Pruef-Knopf zieht leicht zur Maus */
+  const magnet = $(".magnet");
+  $("#check-form").addEventListener("pointermove", e => {
+    const r = magnet.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+    const nah = Math.hypot(dx, dy) < 120;
+    magnet.style.transform = nah ? `translate(${(dx * 0.12).toFixed(1)}px, ${(dy * 0.2).toFixed(1)}px)` : "";
+  });
+  $("#check-form").addEventListener("pointerleave", () => { magnet.style.transform = ""; });
+}
+
+/* Bericht zeichnen: Jahrgang zaehlt rueckwaerts, Pruefpunkte erscheinen nacheinander */
+const ZEICHEN = { schlecht: "×", mittel: "!", gut: "✓" };
+function bericht(ziel, d, mitBild) {
+  const aktuell = d.jahrgang >= JETZT;
+  ziel.innerHTML = `
+    ${mitBild ? `<div class="beispiel-kopf"><div class="mini-handy"><img src="${esc(d.handy_bild_datei)}" alt="Erfundene Bäckerei-Website auf dem Handy"><div class="mini-scan" aria-hidden="true"></div></div><div>` : ""}
+    <div class="urteil ${esc(d.urteil)}">${esc(d.urteil_text)}</div>
+    <h2 class="jahrgang" ${mitBild ? "" : 'id="ergebnis-titel"'}>${aktuell ? "Technisch auf dem Stand von" : "Technisch etwa auf dem Stand von"} <span class="jahr">${JETZT}</span></h2>
+    <p class="adresse">${esc(d.url)}</p>
+    ${mitBild ? "</div></div>" : ""}
+    <ol class="punkte">${d.punkte.map((p, i) => `
+      <li style="--d:${i * 70}ms"><span class="zeichen ${esc(p.status)}" aria-hidden="true">${ZEICHEN[p.status]}</span>
+        <div><strong>${esc(p.titel)} <span class="sr-only">(${p.status === "gut" ? "in Ordnung" : p.status === "mittel" ? "verbesserungswürdig" : "Problem"})</span></strong><p>${esc(p.text)}</p>${p.bild ? warnung(p.bild, seitenBild(d)) : ""}</div></li>`).join("")}
+    </ol>`;
+  schleifen(ziel);
+  return () => abspielen(ziel, d.jahrgang);
+}
+const seitenBild = d => d.handy_bild ? "data:image/jpeg;base64," + d.handy_bild : d.handy_bild_datei;
+const warnung = (bild, seite) => `
+  <div class="warnung" data-loop>
+    <div class="warn-handy" aria-hidden="true"><div class="warn-bildschirm"><img src="${esc(seite)}" alt=""><img class="warnbild" src="${esc(bild)}" alt=""></div></div>
+    <p><strong>So sieht das auf dem Handy aus.</strong> Statt Ihrer Startseite erscheint zuerst diese Warnung, und Besucher müssen sich aktiv entscheiden, trotzdem weiterzugehen.<span class="nachgestellt">Warnseite nachgestellt</span></p>
+  </div>`;
+function abspielen(ziel, jahrgang) {
+  const jahr = ziel.querySelector(".jahr"), liste = ziel.querySelector(".punkte");
+  requestAnimationFrame(() => liste.classList.add("zeigen"));
+  if (ruhig || jahrgang >= JETZT) { jahr.textContent = Math.min(jahrgang, JETZT); return; }
+  const start = performance.now(), dauer = 1600;
+  (function tick(t) {
+    const p = Math.min(1, (t - start) / dauer), e = 1 - Math.pow(1 - p, 3);
+    jahr.textContent = Math.round(JETZT - (JETZT - jahrgang) * e);
+    if (p < 1) requestAnimationFrame(tick);
+  })(start);
+}
+
+/* Beispiel-Ergebnis laden, Animation startet, sobald es ins Bild kommt */
+fetch("assets/beispiel.json").then(r => r.json()).then(d => {
+  const los = bericht($("#bericht-beispiel"), d, true);
+  new IntersectionObserver((eintraege, beob) => {
+    if (eintraege.some(e => e.isIntersecting)) { los(); beob.disconnect(); }
+  }, { threshold: 0.35 }).observe($("#bericht-beispiel"));
+});
+
+/* Der eigentliche Check */
+const form = $("#check-form"), feld = $("#adresse"), knopf = $("#pruefen"), zustand = $("#zustand");
+let geprueft = "";
+/* Oeffentliche Vorschau ohne Server (data-vorschau): kein Live-Check, ehrlich als Beispiel gekennzeichnet */
+const VORSCHAU = document.documentElement.hasAttribute("data-vorschau");
+const HINWEIS_VORSCHAU = "Vorschau ohne Live-Check: Sie sehen das Beispiel-Ergebnis einer erfundenen Bäckerei. Der echte Check startet mit dem Livegang.";
+const meldungstext = f => f.message === "Failed to fetch" ? "Der Check ist gerade nicht erreichbar. Bitte versuchen Sie es gleich noch einmal." : f.message;
+const SCHRITTE = ["Öffne Ihre Seite wie ein Handy-Besucher …", "Prüfe die sichere Verbindung …",
+                  "Suche Datenschutzerklärung und Impressum …", "Prüfe die eingesetzte Technik …", "Schätze den Technik-Stand …"];
+form.addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const adresse = feld.value.trim();
+  if (!adresse) { fehler("Bitte geben Sie die Adresse Ihrer Website ein."); feld.focus(); return; }
+  feld.removeAttribute("aria-invalid");
+  zustand.className = "zustand";
+  knopf.disabled = true;
+  knopf.setAttribute("aria-busy", "true");
+  knopf.querySelector(".knopf-text").textContent = "Prüfe …";
+  heroHandy.classList.add("scannt");
+  let i = 0;
+  zustand.textContent = SCHRITTE[0];
+  const takt = setInterval(() => { i = Math.min(i + 1, SCHRITTE.length - 1); zustand.textContent = SCHRITTE[i]; }, 900);
+  try {
+    let d;
+    if (VORSCHAU) {
+      await new Promise(r => setTimeout(r, ruhig ? 0 : 1800));
+      d = await (await fetch("assets/beispiel.json")).json();
+    } else {
+      const antwort = await fetch("/api/check?url=" + encodeURIComponent(adresse));
+      d = await antwort.json();
+      if (!antwort.ok) throw new Error(d.fehler || "Bei der Prüfung ist etwas schiefgelaufen.");
+    }
+    zustand.textContent = VORSCHAU ? HINWEIS_VORSCHAU : "";
+    geprueft = d.url;
+    $("#ergebnis-bild").src = seitenBild(d);
+    const los = bericht($("#bericht-live"), d, false);
+    if (VORSCHAU) $("#bericht-live").insertAdjacentHTML("afterbegin", `<p class="vorschau-hinweis">${esc(HINWEIS_VORSCHAU)}</p>`);
+    $("#ergebnis").hidden = false;
+    $("#ergebnis").scrollIntoView({ behavior: ruhig ? "auto" : "smooth", block: "start" });
+    setTimeout(los, ruhig ? 0 : 450);
+  } catch (f) {
+    fehler(meldungstext(f));
+  } finally {
+    clearInterval(takt);
+    knopf.disabled = false;
+    knopf.removeAttribute("aria-busy");
+    knopf.querySelector(".knopf-text").textContent = "Kostenlos prüfen";
+    heroHandy.classList.remove("scannt");
+  }
+});
+function fehler(text) {
+  zustand.className = "zustand fehler";
+  zustand.textContent = text;
+  feld.setAttribute("aria-invalid", "true");
+}
+/* Adresse aus dem Link (z. B. von /scroll): Feld fuellen und gleich pruefen */
+const mitgebracht = new URLSearchParams(location.search).get("adresse");
+if (mitgebracht) {
+  history.replaceState(null, "", location.pathname);
+  feld.value = mitgebracht.slice(0, 300);
+  form.requestSubmit();
+}
+
+/* "Jetzt Website pruefen" springt zum Eingabefeld */
+document.querySelectorAll("[data-zum-check]").forEach(a => a.addEventListener("click", ev => {
+  ev.preventDefault();
+  hero.scrollIntoView({ behavior: ruhig ? "auto" : "smooth" });
+  setTimeout(() => feld.focus({ preventScroll: true }), ruhig ? 0 : 500);
+}));
+
+/* Vorher/Nachher: Trennlinie folgt der Maus, per Finger ziehen, per Tastatur ueber den Regler */
+const vergleich = $("#vergleich-feld"), regler = vergleich.querySelector("input");
+const setzen = prozent => { const p = Math.max(0, Math.min(100, prozent)); vergleich.style.setProperty("--pos", p + "%"); regler.value = Math.round(p); };
+// sobald jemand selbst schiebt, hoert das Wippen auf und bleibt aus
+["pointerdown", "focusin", "input"].forEach(art => vergleich.addEventListener(art, () => vergleich.classList.remove("hinweis")));
+vergleich.addEventListener("pointermove", e => {
+  if (e.pointerType === "mouse" || e.buttons) {
+    vergleich.classList.remove("hinweis");
+    const r = vergleich.getBoundingClientRect();
+    setzen(((e.clientX - r.left) / r.width) * 100);
+  }
+});
+regler.addEventListener("input", () => setzen(+regler.value));
+
+/* Abschnitte blenden beim Scrollen ein */
+const beobachter = new IntersectionObserver(eintraege => eintraege.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add("sichtbar"); beobachter.unobserve(e.target); }
+}), { threshold: 0.15 });
+document.querySelectorAll(".einblenden").forEach(el => beobachter.observe(el));
+
+/* Anfragen an den Server schicken, Knopf zeigt solange den Kreisel */
+async function senden(pfad, daten, knopf) {
+  if (VORSCHAU) return { text: "Vorschau: Hier ginge jetzt die Bestätigungsmail an Sie raus. In dieser Vorschau wird nichts gesendet und nichts gespeichert." };
+  knopf.disabled = true;
+  knopf.setAttribute("aria-busy", "true");
+  try {
+    const antwort = await fetch(pfad, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(daten) });
+    const d = await antwort.json().catch(() => ({}));
+    if (!antwort.ok) throw new Error(d.fehler || "Da ist etwas schiefgelaufen. Bitte versuchen Sie es noch einmal.");
+    return d;
+  } finally {
+    knopf.disabled = false;
+    knopf.removeAttribute("aria-busy");
+  }
+}
+document.querySelectorAll("dialog [data-schliessen]").forEach(k => k.addEventListener("click", () => k.closest("dialog").close()));
+
+/* Entwurf anfordern: Double-Opt-In, Digital Architects erfährt erst nach dem Klick auf den Mail-Link davon */
+const dialog = $("#entwurf-dialog"), entwurf = $("#entwurf-form"), entwurfFehler = $("#entwurf-fehler");
+document.querySelectorAll("[data-entwurf]").forEach(k => k.addEventListener("click", () => {
+  entwurf.hidden = false;
+  $("#entwurf-fertig").hidden = true;
+  entwurf.elements.einwilligung.checked = false;  // nie vorausgefüllt, auch nicht beim zweiten Öffnen
+  entwurfFehler.textContent = "";
+  dialog.showModal();
+}));
+entwurf.addEventListener("submit", async ev => {
+  ev.preventDefault();
+  if (!entwurf.checkValidity()) { entwurf.reportValidity(); return; }
+  const f = new FormData(entwurf);
+  entwurfFehler.textContent = "";
+  try {
+    const d = await senden("/api/entwurf", { name: f.get("name"), email: f.get("mail"), adresse: geprueft,
+      einwilligung: f.get("einwilligung") === "on", einwilligung_version: f.get("einwilligung_version") }, entwurf.querySelector("[type=submit]"));
+    $("#entwurf-fertig-text").textContent = d.text;
+    entwurf.hidden = true;
+    $("#entwurf-fertig").hidden = false;
+  } catch (fe) {
+    entwurfFehler.textContent = meldungstext(fe);
+  }
+});
+
+/* Links aus den Mails (?bestaetigen=... / ?abmelden=...) wirken erst per Knopf, nicht schon beim Öffnen:
+   Virenscanner in Firmen rufen Mail-Links vorab auf und hätten sonst ungefragt bestätigt */
+const MELDUNGEN = {
+  bestaetigen: ["Anfrage bestätigen", "Mit einem Klick bestätigen Sie, dass Digital Architects Sie per E-Mail zu Ihrem kostenlosen Entwurf und passenden Angeboten kontaktieren darf.", "Jetzt bestätigen"],
+  abmelden: ["Keine E-Mails mehr?", "Mit einem Klick melden Sie sich ab. Digital Architects schreibt Ihnen dann keine E-Mails mehr.", "Abmelden"],
+};
+const link = new URLSearchParams(location.search), aktion = Object.keys(MELDUNGEN).find(a => link.get(a));
+if (aktion) {
+  const token = link.get(aktion), los = $("#meldung-los"), [titel, text, knopfText] = MELDUNGEN[aktion];
+  history.replaceState(null, "", location.pathname);  // Token nicht im Verlauf oder in Lesezeichen lassen
+  $("#meldung-titel").textContent = titel;
+  $("#meldung-text").textContent = text;
+  los.querySelector(".knopf-text").textContent = knopfText;
+  los.addEventListener("click", async () => {
+    $("#meldung-fehler").textContent = "";
+    try {
+      $("#meldung-text").textContent = (await senden("/api/" + aktion, { token }, los)).text;
+      $("#meldung-titel").textContent = "Erledigt.";
+      los.remove();
+    } catch (fe) {
+      $("#meldung-fehler").textContent = meldungstext(fe);
+    }
+  });
+  $("#meldung-dialog").showModal();
+}
+</script>
+<style>.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }</style>
+</body>
+</html>
